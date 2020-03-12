@@ -40,16 +40,15 @@ graphe::graphe(char* filename)
             int indexOfNextSpace = line.find(' ');
             this->c[j][i] = stoi(line.substr(0,indexOfNextSpace));
             line.erase(0,indexOfNextSpace+1);
-            // std::cout<<line<<std::endl;
         }
         this->c[j][i] = stoi(line);
         ++i;
     }
 
     //initialiser f à 0
-    for(int i=0 ; i<n ; ++i)
-        for(int j=0 ; j<n ; ++j)
-            this->f[i][j]=0;
+    for(i=0 ; i<n ; ++i)
+        for(j=0 ; j<n ; ++j)
+            this->f[j][i]=0;
 
     fs.close();
 }
@@ -113,7 +112,7 @@ void graphe::affichage()
     {
         for(int j = 0 ; j<n ; ++j)
         {
-            std::cout<<this->f[i][j]<<" ";
+            std::cout<<this->f[j][i]<<" ";
         }
         std::cout<<std::endl;
     }
