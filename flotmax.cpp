@@ -230,7 +230,7 @@ void graphe::fordfulkerson(int s, int t)
 //
 
         increment = this->increment(ch, s, t);
-        cout<<"increment pre potentiel break : "<<increment<<endl;//
+        // cout<<"increment pre potentiel break : "<<increment<<endl;//
         if(increment == 0 || increment == 999)
             break;
         
@@ -263,7 +263,7 @@ void graphe::fordfulkerson(int s, int t)
                 this->f[preds[i]][preds[i-1]] += increment;//[i][j]
             else
             {
-                cout<<"SENS INVERSE"<<endl;//
+                // cout<<"SENS INVERSE"<<endl;//
                 this->f[preds[i-1]][preds[i]] -= increment;//[j][i] : inverse
             }
                 
