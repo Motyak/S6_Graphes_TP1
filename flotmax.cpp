@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <stack>
 #include "flotmax.h"
 
 using namespace std;
@@ -20,7 +20,7 @@ using namespace std;
 graphe::graphe(char* filename)
 {
     // !!! TODO !!! //
-
+    
     ifstream fs;
     fs.open(filename);
     string line;
@@ -34,8 +34,7 @@ graphe::graphe(char* filename)
     i = 0;
     while(getline(fs,line))
     {
-        j = 0;
-        for(j; j<n-1 ; ++j)
+        for(j = 0 ; j<n-1 ; ++j)
         {
             int indexOfNextSpace = line.find(' ');
             this->c[j][i] = stoi(line.substr(0,indexOfNextSpace));
@@ -70,6 +69,40 @@ stockant dans ch une chaîne augmentante de s à t
 void graphe::chaineaugmentante(int ch[N],int s, int t)
 {
     // !!! TODO !!! //
+    bool visites[this->n];
+    stack<int> pile;
+    bool stop = false;
+    int i;
+    for(i = 0 ; i<this->n ; ++i)
+    {
+        visites[i] = false;
+        ch[i] = -1;
+    }
+    pile.push(s);
+    while(!pile.empty() && !stop)
+    {
+        i = pile.top();
+        pile.pop();
+        if(i == t)
+            stop = true;
+        else if(visites[i] == false)
+        {
+            visites[i] = true;
+            for(int j = 0 ; j<this->n ; ++j)
+            {
+                if(visites[j] == false)
+                {
+                    if((this->c[i][j] > 0 && this->c[i][j] > this->f[i][j])
+                        || (this->c[j][i] > 0 && this->f[j][i] > 0))
+                    {
+                        pile.push(j);
+                        ch[j] = i;
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 /****************************************/
@@ -79,6 +112,19 @@ de s à t
 void graphe::affichage(int ch[N], int s, int t)
 {
     // !!! TODO !!! //
+    int preds[N];
+    int i = 0;
+    preds[i] = t; //on commence par t, puis on cherche les pred
+    while(ch[preds[i]] != -1)
+    {
+        preds[i+1] = ch[preds[i]];
+        ++i;
+    }
+             
+    for(; i>0 ; --i)
+        cout<<preds[i]<<" -- ";
+    cout<<preds[0]<<endl;
+
 }
 
 /****************************************/
@@ -87,7 +133,29 @@ void graphe::affichage(int ch[N], int s, int t)
 int graphe::increment(int ch[N], int s, int t)
 {
     // !!! TODO !!! //
-	return(0);
+    int preds[N];
+    int i = 0;
+    preds[i] = t; //on commence par t, puis on cherche les pred
+    while(ch[preds[i]] != -1)
+    {
+        preds[i+1] = ch[preds[i]];
+        ++i;
+    }
+        
+        
+        
+    int increment = 999;    //valeur volontairement grande
+    int incrementMax;
+    for(; i>0 ; --i)
+    {
+        incrementMax = this->c[preds[i-1]][preds[i]] //jinverse
+            - this->f[preds[i-1]][preds[i]];
+        if(incrementMax < increment)
+            increment = incrementMax;
+            
+    }
+
+	return increment;
 }
 
 
@@ -98,23 +166,20 @@ f et c
 void graphe::affichage()
 {
     // !!! TODO !!! //
-    for(int i = 0 ; i<n ; ++i)
+    cout<<"c ="<<endl;
+    for(int j = 0 ; j<n ; ++j)
     {
-        for(int j = 0 ; j<n ; ++j)
-        {
-            std::cout<<this->c[j][i]<<" ";
-        }
-        std::cout<<std::endl;
+        for(int i = 0 ; i<n ; ++i)
+            cout<<this->c[j][i]<<'\t';
+        cout<<endl;
     }
-    std::cout<<std::endl;
 
-    for(int i = 0 ; i<n ; ++i)
+    cout<<"f ="<<endl;
+    for(int j = 0 ; j<n ; ++j)
     {
-        for(int j = 0 ; j<n ; ++j)
-        {
-            std::cout<<this->f[j][i]<<" ";
-        }
-        std::cout<<std::endl;
+        for(int i = 0 ; i<n ; ++i)
+            cout<<this->f[j][i]<<'\t';
+        cout<<endl;
     }
 }
 
@@ -123,10 +188,15 @@ void graphe::affichage()
 /* Objectif : Calcul de la somme des flots sortants
 du noeud i
 /****************************************/
-int graphe::flotsortant(int i)
+int graphe::flotsortant(int j)
 {
     // !!! TODO !!! //
-    return 0;
+    //il suffit de faire la somme de la i ème ligne de la matrice f
+    int sum = 0;
+    for(int i = 0 ; i<this->n ; ++i)
+        sum += this->f[j][i];
+        
+    return sum;
 }
 
 /****************************************/
@@ -135,4 +205,40 @@ int graphe::flotsortant(int i)
 void graphe::fordfulkerson(int s, int t)
 {
     // !!! TODO !!! //
+    int ch[N];
+    int increment;
+
+    do
+    {
+        //rechercher une chaine augmentante
+        this->chaineaugmentante(ch, s, t);
+
+        increment = this->increment(ch, s, t);
+        if(increment == 0 || increment == 999)
+            break;
+        // for(int o : ch)
+        //     cout<<o<<",";
+        // cout<<endl;
+        
+        //afficher la chaine augmentante
+        cout<<"Chaine augmentante = ";
+        this->affichage(ch, s, t);
+        
+        //afficher l'increment
+        cout<<"incr = "<<increment<<endl;
+        
+        //augmenter le flot sur cette chaine   
+        int preds[N];
+        int i = 0;
+        preds[i] = t; //on commence par t, puis on cherche les pred
+        while(ch[preds[i]] != -1)
+        {
+            preds[i+1] = ch[preds[i]];
+            ++i;
+        }
+            
+        for(; i>0 ; --i)
+            this->f[preds[i]][preds[i-1]] += increment;
+
+    } while(increment != 0 && increment != 999);
 }
