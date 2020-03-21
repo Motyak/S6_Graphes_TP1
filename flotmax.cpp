@@ -146,13 +146,21 @@ int graphe::increment(int ch[N], int s, int t)
         
     int increment = 999;    //valeur volontairement grande
     int incrementMax;
+    int capa;
+    int flot;
+    int flotInverse;
     for(; i>0 ; --i)
     {
-        incrementMax = this->c[preds[i]][preds[i-1]]
-            - this->f[preds[i]][preds[i-1]];
+        // incrementMax = this->c[preds[i]][preds[i-1]]
+        //     - this->f[preds[i]][preds[i-1]];
+        capa = this->c[preds[i]][preds[i-1]];//
+        flot = this->f[preds[i]][preds[i-1]];//
+        flotInverse = this->f[preds[i-1]][preds[i]];//
+
+        incrementMax = flotInverse < (capa - flot)  ? (capa - flot) : flotInverse;//
+
         if(incrementMax < increment)
-            increment = incrementMax;
-            
+            increment = incrementMax;   
     }
 
 	return increment;
@@ -213,12 +221,18 @@ void graphe::fordfulkerson(int s, int t)
         //rechercher une chaine augmentante
         this->chaineaugmentante(ch, s, t);
 
-        increment = this->increment(ch, s, t);
-        if(increment == 0 || increment == 999)
-            break;
+//
         // for(int o : ch)
         //     cout<<o<<",";
         // cout<<endl;
+        // this->affichage(ch, s, t);
+        // this->affichage();
+//
+
+        increment = this->increment(ch, s, t);
+        cout<<"increment pre potentiel break : "<<increment<<endl;//
+        if(increment == 0 || increment == 999)
+            break;
         
         //afficher la chaine augmentante
         cout<<"Chaine augmentante = ";
@@ -237,8 +251,24 @@ void graphe::fordfulkerson(int s, int t)
             ++i;
         }
             
+        // for(; i>0 ; --i)
+        //     this->f[preds[i]][preds[i-1]] += increment;
         for(; i>0 ; --i)
-            this->f[preds[i]][preds[i-1]] += increment;
+        {
+            int capa = this->c[preds[i]][preds[i-1]];
+            int flot = this->f[preds[i]][preds[i-1]];
+            int flotInverse = this->f[preds[i-1]][preds[i]];
+            bool sensInverse = flotInverse > (capa - flot);
+            if(!sensInverse)
+                this->f[preds[i]][preds[i-1]] += increment;//[i][j]
+            else
+            {
+                cout<<"SENS INVERSE"<<endl;//
+                this->f[preds[i-1]][preds[i]] -= increment;//[j][i] : inverse
+            }
+                
+        }
+            
 
     } while(increment != 0 && increment != 999);
 }
