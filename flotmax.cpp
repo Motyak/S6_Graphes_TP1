@@ -148,8 +148,8 @@ int graphe::increment(int ch[N], int s, int t)
     int incrementMax;
     for(; i>0 ; --i)
     {
-        incrementMax = this->c[preds[i-1]][preds[i]] //jinverse
-            - this->f[preds[i-1]][preds[i]];
+        incrementMax = this->c[preds[i]][preds[i-1]]
+            - this->f[preds[i]][preds[i-1]];
         if(incrementMax < increment)
             increment = incrementMax;
             

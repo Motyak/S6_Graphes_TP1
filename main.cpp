@@ -20,19 +20,19 @@ int main(int argc,char** argv)
 		obj.affichage();/**/
 		
 		// int ch[N];
-		// obj.chaineaugmentante(ch, 0, 5);
+		// obj.chaineaugmentante(ch, 0, 2);
 		// for(int i = 0 ; i<obj.getn() ; ++i)
 		// 	cout<<ch[i]<<",";
 		// cout<<endl;
-		// obj.affichage(ch, 0, 5);
-		// cout<<"increment = "<<obj.increment(ch, 0, 5)<<endl;
+		// obj.affichage(ch, 0, 2);
+		// cout<<"increment = "<<obj.increment(ch, 0, 2)<<endl;
 
-		// int s = 0;/**/
-		// int t = obj.getn()-1;/**/
+		int s = 0;/**/
+		int t = obj.getn()-1;/**/
 		
-		// obj.fordfulkerson(s,t);/**/
-		// obj.affichage();/**/
-		// cout << "Le flot maximum de " << s << " à " << t << " est  = " << obj.flotsortant(s) << endl;/**/
+		obj.fordfulkerson(s,t);/**/
+		obj.affichage();/**/
+		cout << "Le flot maximum de " << s << " à " << t << " est  = " << obj.flotsortant(s) << endl;/**/
 	}
 }
 
