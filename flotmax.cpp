@@ -145,7 +145,9 @@ int graphe::increment(int ch[N], int s, int t)
         
         
     int increment = 999;    //valeur volontairement grande
+    int incrementAvecSensInverse = 999;
     int incrementMax;
+    int incrementMaxAvecSensInverse;
     int capa;
     int flot;
     int flotInverse;
@@ -153,17 +155,22 @@ int graphe::increment(int ch[N], int s, int t)
     {
         // incrementMax = this->c[preds[i]][preds[i-1]]
         //     - this->f[preds[i]][preds[i-1]];
-        capa = this->c[preds[i]][preds[i-1]];//
-        flot = this->f[preds[i]][preds[i-1]];//
-        flotInverse = this->f[preds[i-1]][preds[i]];//
+        capa = this->c[preds[i]][preds[i-1]];
+        flot = this->f[preds[i]][preds[i-1]];
+        flotInverse = this->f[preds[i-1]][preds[i]];
 
-        incrementMax = flotInverse < (capa - flot)  ? (capa - flot) : flotInverse;//
+        incrementMax = capa - flot;
+        incrementMaxAvecSensInverse = flotInverse < (capa - flot)  ? (capa - flot) : flotInverse;
 
         if(incrementMax < increment)
-            increment = incrementMax;   
+            increment = incrementMax;
+
+        if(incrementMaxAvecSensInverse < incrementAvecSensInverse)
+            incrementAvecSensInverse = incrementMaxAvecSensInverse;   
     }
 
-	return increment;
+	// return increment;
+    return incrementAvecSensInverse > increment ? incrementAvecSensInverse : increment;
 }
 
 
