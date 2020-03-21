@@ -27,12 +27,12 @@ int main(int argc,char** argv)
 		// obj.affichage(ch, 0, 5);
 		// cout<<"increment = "<<obj.increment(ch, 0, 5)<<endl;
 
-		int s = 0;/**/
-		int t = obj.getn()-1;/**/
+		// int s = 0;/**/
+		// int t = obj.getn()-1;/**/
 		
-		obj.fordfulkerson(s,t);/**/
-		obj.affichage();/**/
-		cout << "Le flot maximum de " << s << " à " << t << " est  = " << obj.flotsortant(s) << endl;/**/
+		// obj.fordfulkerson(s,t);/**/
+		// obj.affichage();/**/
+		// cout << "Le flot maximum de " << s << " à " << t << " est  = " << obj.flotsortant(s) << endl;/**/
 	}
 }
 
