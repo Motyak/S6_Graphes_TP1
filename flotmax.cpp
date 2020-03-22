@@ -145,9 +145,7 @@ int graphe::increment(int ch[N], int s, int t)
         
         
     int increment = 999;    //valeur volontairement grande
-    int incrementAvecSensInverse = 999;
     int incrementMax;
-    int incrementMaxAvecSensInverse;
     int capa;
     int flot;
     int flotInverse;
@@ -155,22 +153,47 @@ int graphe::increment(int ch[N], int s, int t)
     {
         // incrementMax = this->c[preds[i]][preds[i-1]]
         //     - this->f[preds[i]][preds[i-1]];
-        capa = this->c[preds[i]][preds[i-1]];
-        flot = this->f[preds[i]][preds[i-1]];
-        flotInverse = this->f[preds[i-1]][preds[i]];
+        capa = this->c[preds[i]][preds[i-1]];//
+        flot = this->f[preds[i]][preds[i-1]];//
+        flotInverse = this->f[preds[i-1]][preds[i]];//
 
-        incrementMax = capa - flot;
-        incrementMaxAvecSensInverse = flotInverse < (capa - flot)  ? (capa - flot) : flotInverse;
+        //incrementMax = flotInverse < (capa - flot)  ? (capa - flot) : flotInverse;//
+        /***************************************************
+         * S. Gueye, 22/03/2020, 12h20
+         * **************************************************
+         * Au-dessus vous avez introduit une subtilité qui n'est pas fausse.
+         * On fait même en général moins d'itérations comme cela. 
+         * Vous prenez le maximum des augmentations possibles en comparant les résidus de l'arc 
+         * pris dans le bon sens et celui pris dans le sens inverse. C'est juste !
+         * 
+         * Ce que j'avais suggéré est plus simple : si on peut augmenter en prenant l'arc
+         * dans le bon sens on le fait sinon on regarde le sens inverse. 
+         * 
+         * C'est ce qui explique que vous trouvez des fois en une chaîne ce que je trouve en deux.
+         * 
+         * Je vous ai mis ci-dessous l'incrément calculé selon cette méthode. 
+         * Mais la vôtre est aussi valable. 
+         * Vous verrez également dans votre méthode "fordfulkerson" un changement  analogue.
+         * Avec ces deux modifications, vous trouverez normalement les mêmes chaines que les miennes.
+         * En cliquant sur "evaluate" vous devriez avoir 100/100 maintenant.
+         * 
+         * Pour résumer je ne cherchais pas à vous faire trouver les augmentations les plus fortes, simplement à déterminer
+         * une chaîne augmentante en regardant en priorité si on peut la parcourir dans le bon sens pour tous les arcs.
+         * 
+         * Pour info, de manière générale, pour faire le moins d'itérations possibles, il faut en fait chercher les chaînes les plus 
+         * courtes en nombre arcs.
+         * *************************************************/
+         if( (capa - flot) > 0)
+            incrementMax = (capa - flot);
+        else
+            incrementMax = flotInverse;
+        /****************************************************/
 
         if(incrementMax < increment)
-            increment = incrementMax;
-
-        if(incrementMaxAvecSensInverse < incrementAvecSensInverse)
-            incrementAvecSensInverse = incrementMaxAvecSensInverse;   
+            increment = incrementMax;   
     }
 
-	// return increment;
-    return incrementAvecSensInverse > increment ? incrementAvecSensInverse : increment;
+	return increment;
 }
 
 
@@ -237,7 +260,7 @@ void graphe::fordfulkerson(int s, int t)
 //
 
         increment = this->increment(ch, s, t);
-        // cout<<"increment pre potentiel break : "<<increment<<endl;//
+        //cout<<"increment pre potentiel break : "<<increment<<endl;//
         if(increment == 0 || increment == 999)
             break;
         
@@ -265,7 +288,19 @@ void graphe::fordfulkerson(int s, int t)
             int capa = this->c[preds[i]][preds[i-1]];
             int flot = this->f[preds[i]][preds[i-1]];
             int flotInverse = this->f[preds[i-1]][preds[i]];
-            bool sensInverse = flotInverse > (capa - flot);
+            //bool sensInverse = flotInverse > (capa - flot);
+            /***************************************************
+            * S. Gueye, 22/03/2020, 12h20
+            * Ci-dsssous le petit changement (à la place de la déclaration ci-dessus). 
+            * Ce changement est analogue à ce qui est expliqué 
+            * dans la méthode "increment".
+            * *************************************************/
+            bool sensInverse = true;
+
+            if( (capa - flot) > 0)
+                sensInverse = false;
+            /**************************************************/    
+            
             if(!sensInverse)
                 this->f[preds[i]][preds[i-1]] += increment;//[i][j]
             else
